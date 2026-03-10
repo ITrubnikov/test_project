@@ -1,25 +1,47 @@
 /**
- * Smoke test to verify the jest + jsdom test infrastructure works correctly.
+ * Tests for the computeCounts() module (src/counter.js)
  */
 
-describe('Test infrastructure smoke test', () => {
-  test('basic arithmetic works', () => {
-    expect(1 + 1).toBe(2);
+const { computeCounts } = require('../src/counter');
+
+describe('computeCounts()', () => {
+  test('returns {total:0, active:0, done:0} for empty array', () => {
+    expect(computeCounts([])).toEqual({ total: 0, active: 0, done: 0 });
   });
 
-  test('jsdom environment is available', () => {
-    // Verify we have access to the DOM (jsdom environment)
-    expect(typeof document).toBe('object');
-    expect(typeof window).toBe('object');
+  test('returns correct counts for all-active tasks', () => {
+    const tasks = [
+      { id: '1', text: 'Task 1', done: false },
+      { id: '2', text: 'Task 2', done: false },
+      { id: '3', text: 'Task 3', done: false },
+    ];
+    expect(computeCounts(tasks)).toEqual({ total: 3, active: 3, done: 0 });
   });
 
-  test('can create DOM elements', () => {
-    const div = document.createElement('div');
-    div.textContent = 'Hello, test!';
-    document.body.appendChild(div);
+  test('returns correct counts for mixed done/active tasks', () => {
+    const tasks = [
+      { id: '1', text: 'Task 1', done: false },
+      { id: '2', text: 'Task 2', done: false },
+      { id: '3', text: 'Task 3', done: true },
+    ];
+    expect(computeCounts(tasks)).toEqual({ total: 3, active: 2, done: 1 });
+  });
 
-    const found = document.querySelector('div');
-    expect(found).not.toBeNull();
-    expect(found.textContent).toBe('Hello, test!');
+  test('returns correct counts for all-done tasks', () => {
+    const tasks = [
+      { id: '1', text: 'Task 1', done: true },
+      { id: '2', text: 'Task 2', done: true },
+    ];
+    expect(computeCounts(tasks)).toEqual({ total: 2, active: 0, done: 2 });
+  });
+
+  test('handles single active task', () => {
+    const tasks = [{ id: '1', text: 'Solo', done: false }];
+    expect(computeCounts(tasks)).toEqual({ total: 1, active: 1, done: 0 });
+  });
+
+  test('handles single done task', () => {
+    const tasks = [{ id: '1', text: 'Solo', done: true }];
+    expect(computeCounts(tasks)).toEqual({ total: 1, active: 0, done: 1 });
   });
 });

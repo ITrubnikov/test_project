@@ -237,6 +237,7 @@
     </div>
   </div>
 
+  <script src="src/counter.js"></script>
   <script>
     const STORAGE_KEY = 'tm_tasks_v1';
     let tasks = [];
@@ -268,9 +269,7 @@
         : filter === 'active' ? tasks.filter(t => !t.done)
         : tasks.filter(t => t.done);
 
-      const total  = tasks.length;
-      const done   = tasks.filter(t => t.done).length;
-      const active = total - done;
+      const { total, active, done } = computeCounts(tasks);
 
       stats.innerHTML = `<span>Всего: <b>${total}</b></span><span>Активных: <b>${active}</b></span><span>Выполнено: <b>${done}</b></span>`;
 
